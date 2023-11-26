@@ -16,7 +16,7 @@ const ScrollToTop = () => {
 
 function App() {
   return (
-    <div>
+    <div className="App">
       {" "}
       <ToastContainer />
       <ScrollToTop />
