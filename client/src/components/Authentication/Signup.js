@@ -2,12 +2,17 @@ import {
   Button,
   FormControl,
   FormLabel,
+  Image,
   Input,
   InputGroup,
   InputRightElement,
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import placeholder from "../../assets/images/placeholder.jpg";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [name, setName] = useState();
@@ -15,6 +20,8 @@ const Signup = () => {
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
   const [pic, setPic] = useState();
+  const [loading, setLoading] = useState();
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const handleShowPassword = () => setShowPassword(!showPassword);
@@ -23,11 +30,83 @@ const Signup = () => {
   const handleShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
-  const handleUploadImage = (pics) => {};
+  const handleUploadImage = async (pics) => {
+    setLoading(true);
 
-  const submitHandler = () => {};
+    if (
+      pics.type === "image/jpeg" ||
+      pics.type === "image/png" ||
+      pics.type === "image/jpg"
+    ) {
+      const data = new FormData();
+
+      data.append("file", pics);
+      data.append("upload_preset", "chat-app");
+      try {
+        const res = await axios.post(
+          "https://api.cloudinary.com/v1_1/mohamedkhairy/upload",
+          data
+        );
+
+        const { url } = res.data;
+        setPic(url);
+        console.log(url);
+        setLoading(false);
+        toast.success("Image Uploaded Successfully");
+      } catch (err) {
+        console.log(err);
+        toast.success("Upload Image Failed");
+        setLoading(false);
+      }
+    }
+  };
+
+  const submitHandler = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      toast.warning("Please Fill all the Feilds");
+      setLoading(false);
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Password Doesn't Match.");
+      return;
+    }
+    console.log(name, email, password, pic);
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+      const { data } = await axios.post(
+        "/api/user/signup",
+        {
+          name,
+          email,
+          password,
+          pic,
+        },
+        config
+      );
+      console.log(data);
+      toast.success("Sign Up Successfully");
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      setLoading(false);
+      navigate("/chats");
+    } catch (error) {
+      toast.error(error.response.data.message);
+      setLoading(false);
+    }
+  };
+
   return (
     <VStack spacing="5px" color={"black"}>
+      <Image
+        borderRadius="full"
+        boxSize="100px"
+        src={pic || placeholder}
+        alt="Profile Image"
+      />
       <FormControl id="first-name" isRequired>
         <FormLabel>Name</FormLabel>
         <Input
@@ -85,8 +164,10 @@ const Signup = () => {
       <Button
         colorScheme="blue"
         width="100%"
+        color="white"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
+        isLoading={loading}
       >
         Sign Up
       </Button>

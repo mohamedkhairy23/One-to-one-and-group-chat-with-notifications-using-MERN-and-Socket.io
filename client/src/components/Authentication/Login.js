@@ -7,17 +7,51 @@ import {
   InputRightElement,
   VStack,
 } from "@chakra-ui/react";
+import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const handleShowPassword = () => setShowPassword(!showPassword);
 
-  const submitHandler = () => {};
-
+  const submitHandler = async () => {
+    setLoading(true);
+    if (!email || !password) {
+      toast.warning("Please Fill all the Feilds");
+      setLoading(false);
+    }
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+      const { data } = await axios.post(
+        "/api/user/login",
+        {
+          email,
+          password,
+        },
+        config
+      );
+      console.log(data);
+      toast.success("Logged In Successfully");
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      setLoading(false);
+      navigate("/chats");
+    } catch (error) {
+      toast.error(error.response.data.message);
+      setLoading(false);
+    }
+  };
   return (
     <VStack spacing="5px" color={"black"}>
       <FormControl id="email" isRequired>
@@ -25,6 +59,7 @@ const Login = () => {
         <Input
           type="email"
           placeholder="Enter Your Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
@@ -34,6 +69,7 @@ const Login = () => {
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="Enter Your Password"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
@@ -48,6 +84,7 @@ const Login = () => {
         width="100%"
         style={{ marginTop: 15 }}
         onClick={submitHandler}
+        isLoading={loading}
       >
         Login
       </Button>{" "}

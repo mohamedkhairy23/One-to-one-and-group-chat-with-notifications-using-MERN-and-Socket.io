@@ -5,6 +5,7 @@ import HomePage from "./Pages/HomePage";
 import ChatPage from "./Pages/ChatPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Protect from "./Protect";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -22,7 +23,9 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route index={true} path="/" element={<HomePage />} />
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="" element={<Protect />}>
+          <Route path="/chats" element={<ChatPage />} />
+        </Route>
       </Routes>
     </div>
   );
