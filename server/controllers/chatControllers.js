@@ -13,7 +13,7 @@ const accessChat = asyncHandler(async (req, res) => {
     return res.sendStatus(400);
   }
 
-  var isChatExist = await Chat.find({
+  let isChatExist = await Chat.find({
     isGroupChat: false,
     $and: [
       { users: { $elemMatch: { $eq: req.user._id } } },
@@ -50,4 +50,30 @@ const accessChat = asyncHandler(async (req, res) => {
     }
   }
 });
-module.exports = { accessChat };
+
+//@description     Fetch all chats for a logged in user
+//@route           GET /api/chat/
+//@access          Protected
+const fetchChats = asyncHandler(async (req, res) => {
+  try {
+    let loggedInUserChats = await Chat.find({
+      users: { $elemMatch: { $eq: req.user._id } },
+    })
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password")
+      .populate("latestMessage")
+      .sort({ updatedAt: -1 });
+
+    loggedInUserChats = await User.populate(loggedInUserChats, {
+      path: "latestMessage.sender",
+      select: "name pic email",
+    });
+
+    res.status(200).send(loggedInUserChats);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+module.exports = { accessChat, fetchChats };
