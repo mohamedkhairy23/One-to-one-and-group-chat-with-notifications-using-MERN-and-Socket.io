@@ -128,7 +128,7 @@ const renameGroupChat = asyncHandler(async (req, res) => {
     {
       chatName,
     },
-    { new: true }
+    { new: true, runValidators: true }
   )
     .populate("users", "-password")
     .populate("groupAdmin", "-password");
@@ -136,4 +136,74 @@ const renameGroupChat = asyncHandler(async (req, res) => {
   res.json(updatedChat);
 });
 
-module.exports = { accessChat, fetchChats, createGroupChat, renameGroupChat };
+// @desc    Add a user to Group
+// @route   PUT /api/chat/addtogroup
+// @access  Protected
+const addToGroup = asyncHandler(async (req, res) => {
+  const { chatId, userId } = req.body;
+
+  const chatExist = await Chat.findById(chatId);
+  if (!chatExist) {
+    res.status(404);
+    throw new Error("Chat Not Found");
+  }
+
+  if (chatExist.groupAdmin.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error("Only admin of that group can add a user");
+  }
+
+  const addUserToGroupChat = await Chat.findByIdAndUpdate(
+    chatId,
+    {
+      $push: { users: userId },
+    },
+    { new: true, runValidators: true }
+  )
+    .populate("users", "-password")
+    .populate("groupAdmin", "-password");
+
+  res.json(addUserToGroupChat);
+});
+
+// @desc    Remove a user from Group
+// @route   PUT /api/chat/groupremove
+// @access  Protected
+const removeFromGroup = asyncHandler(async (req, res) => {
+  const { chatId, userId } = req.body;
+
+  const chatExist = await Chat.findById(chatId);
+
+  if (!chatExist) {
+    res.status(404);
+    throw new Error("Chat Not Found");
+  }
+
+  if (chatExist.groupAdmin.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error("Only admin of that group can remove a user");
+  }
+
+  const removeUserFromGroup = await Chat.findByIdAndUpdate(
+    chatId,
+    {
+      $pull: { users: userId },
+    },
+    {
+      new: true,
+    }
+  )
+    .populate("users", "-password")
+    .populate("groupAdmin", "-password");
+
+  res.json(removeUserFromGroup);
+});
+
+module.exports = {
+  accessChat,
+  fetchChats,
+  createGroupChat,
+  renameGroupChat,
+  addToGroup,
+  removeFromGroup,
+};

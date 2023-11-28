@@ -26,14 +26,14 @@ const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password, pic } = req.body;
 
   if (!name || !email || !password) {
-    resizeBy.status(400);
+    res.status(400);
     throw new Error("Please enter all the fields");
   }
 
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-    resizeBy.status(400);
+    res.status(400);
     throw new Error("User already exists");
   }
 
