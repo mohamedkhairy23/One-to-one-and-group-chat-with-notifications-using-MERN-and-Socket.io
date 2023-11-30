@@ -49,6 +49,7 @@ const SideDrawer = () => {
       toast.warning(
         "Please enter the name or email of the person you are searching for Him/Her"
       );
+      return;
     }
 
     try {

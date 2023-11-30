@@ -27,6 +27,7 @@ const Login = () => {
     if (!email || !password) {
       toast.warning("Please Fill all the Feilds");
       setLoading(false);
+      return;
     }
     try {
       const config = {
