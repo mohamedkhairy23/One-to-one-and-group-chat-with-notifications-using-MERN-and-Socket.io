@@ -5,6 +5,7 @@ import {
   FormControl,
   IconButton,
   Input,
+  Spinner,
   useDisclosure,
 } from "@chakra-ui/react";
 import {
@@ -21,6 +22,7 @@ import { useState } from "react";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import { toast } from "react-toastify";
 import axios from "axios";
+import UserListItem from "../UserAvatar/UserListItem";
 
 const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,6 +33,33 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [renameLoading, setRenameLoading] = useState(false);
+
+  const handleSearch = async (query) => {
+    setSearch(query);
+    if (!query) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      const { data } = await axios.get(
+        `/api/user/allusers?search=${search}`,
+        config
+      );
+      console.log(data);
+      setLoading(false);
+      setSearchResult(data);
+    } catch (error) {
+      toast.error("Failed to load fetch the search results");
+    }
+  };
 
   const handleRename = async () => {
     if (!groupChatName) return;
@@ -56,12 +85,79 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
       setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       setRenameLoading(false);
-    } catch (error) {}
+      toast.success("Updated Group Name Successfully");
+    } catch (error) {
+      toast.error(error.response.data.message);
+      setRenameLoading(false);
+    }
+    setGroupChatName("");
   };
 
-  const handleRemove = async () => {};
+  const handleAddUser = async (userItem) => {
+    if (
+      selectedChat.users.find(
+        (selectedUser) => selectedUser._id === userItem._id
+      )
+    ) {
+      toast.error("User already In Group");
+      return;
+    }
 
-  const handleSearch = async (query) => {};
+    try {
+      setLoading(true);
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+        "/api/chat/addtogroup",
+        {
+          chatId: selectedChat._id,
+          userId: userItem._id,
+        },
+        config
+      );
+
+      setSelectedChat(data);
+      setFetchAgain(!fetchAgain);
+      setLoading(false);
+      toast.success(
+        `${userItem.name} added to ${selectedChat.chatName} successfully`
+      );
+    } catch (error) {
+      toast.error(error.response.data.message);
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveUser = async (userItem) => {
+    // try {
+    //   setLoading(true);
+    //   const config = {
+    //     headers: {
+    //       Authorization: `Bearer ${user.token}`,
+    //     },
+    //   };
+    //   const { data } = await axios.put(
+    //     "/api/chat/addtogroup",
+    //     {
+    //       chatId: selectedChat._id,
+    //       userId: userItem._id,
+    //     },
+    //     config
+    //   );
+    //   userItem._id === user._id ? setSelectedChat() : setSelectedChat(data);
+    //   setFetchAgain(!fetchAgain);
+    //   setLoading(false);
+    // } catch (error) {
+    //   toast.error(error.response.data.message);
+    //   setLoading(false);
+    // }
+    // setGroupChatName("");
+  };
 
   return (
     <>
@@ -89,7 +185,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
                 <UserBadgeItem
                   key={userItem._id}
                   user={userItem}
-                  handleFunction={() => handleRemove(userItem)}
+                  handleFunction={() => handleRemoveUser(userItem)}
                 />
               ))}
             </Box>
@@ -117,10 +213,21 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </FormControl>
+            {loading ? (
+              <Spinner size="lg" />
+            ) : (
+              searchResult.map((userItem) => (
+                <UserListItem
+                  key={userItem._id}
+                  user={userItem}
+                  handleFunction={() => handleAddUser(userItem)}
+                />
+              ))
+            )}
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="red" onClick={handleRemove(user)}>
+            <Button colorScheme="red" onClick={handleRemoveUser(user)}>
               Leave Group
             </Button>
           </ModalFooter>

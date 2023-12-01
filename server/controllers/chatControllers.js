@@ -153,13 +153,13 @@ const addToGroup = asyncHandler(async (req, res) => {
     throw new Error("Only admin of that group can add a user");
   }
 
-  const isUerExistInThatGroup = await Chat.findOne({
-    users: { $elemMatch: { $eq: userId } },
-  });
-  if (isUerExistInThatGroup) {
-    res.status(400);
-    throw new Error("User already exist in that group");
-  }
+  // const isUerExistInThatGroup = await Chat.findOne({
+  //   users: { $elemMatch: { $eq: userId } },
+  // });
+  // if (isUerExistInThatGroup) {
+  //   res.status(400);
+  //   throw new Error("User already exist in that group");
+  // }
 
   const addUserToGroupChat = await Chat.findByIdAndUpdate(
     chatId,
