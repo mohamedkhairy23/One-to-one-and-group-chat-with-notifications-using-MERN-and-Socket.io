@@ -85,7 +85,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
       setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       setRenameLoading(false);
-      toast.success("Updated Group Name Successfully");
+      toast.success("Group Name Changed Successfully");
     } catch (error) {
       toast.error(error.response.data.message);
       setRenameLoading(false);
@@ -154,8 +154,8 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
       setLoading(false);
       toast.success(
         userItem._id === user._id
-          ? `You left (${selectedChat.chatName}) group`
-          : `${userItem.name} removed from (${selectedChat.chatName}) group successfully`
+          ? `You left (${selectedChat.chatName}) successfully`
+          : `${userItem.name} removed from (${selectedChat.chatName}) successfully`
       );
     } catch (error) {
       toast.error(error.response.data.message);
