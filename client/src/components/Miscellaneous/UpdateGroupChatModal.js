@@ -125,7 +125,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
       setFetchAgain(!fetchAgain);
       setLoading(false);
       toast.success(
-        `${userItem.name} added to ${selectedChat.chatName} successfully`
+        `${userItem.name} added to (${selectedChat.chatName}) successfully`
       );
     } catch (error) {
       toast.error(error.response.data.message);
@@ -134,29 +134,34 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const handleRemoveUser = async (userItem) => {
-    // try {
-    //   setLoading(true);
-    //   const config = {
-    //     headers: {
-    //       Authorization: `Bearer ${user.token}`,
-    //     },
-    //   };
-    //   const { data } = await axios.put(
-    //     "/api/chat/addtogroup",
-    //     {
-    //       chatId: selectedChat._id,
-    //       userId: userItem._id,
-    //     },
-    //     config
-    //   );
-    //   userItem._id === user._id ? setSelectedChat() : setSelectedChat(data);
-    //   setFetchAgain(!fetchAgain);
-    //   setLoading(false);
-    // } catch (error) {
-    //   toast.error(error.response.data.message);
-    //   setLoading(false);
-    // }
-    // setGroupChatName("");
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.put(
+        "/api/chat/removefromgroup",
+        {
+          chatId: selectedChat._id,
+          userId: userItem._id,
+        },
+        config
+      );
+      userItem._id === user._id ? setSelectedChat() : setSelectedChat(data);
+      setFetchAgain(!fetchAgain);
+      setLoading(false);
+      toast.success(
+        userItem._id === user._id
+          ? `You left (${selectedChat.chatName}) group`
+          : `${userItem.name} removed from (${selectedChat.chatName}) group successfully`
+      );
+    } catch (error) {
+      toast.error(error.response.data.message);
+      setLoading(false);
+    }
+    setGroupChatName("");
   };
 
   return (
@@ -227,7 +232,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="red" onClick={handleRemoveUser(user)}>
+            <Button colorScheme="red" onClick={() => handleRemoveUser(user)}>
               Leave Group
             </Button>
           </ModalFooter>
