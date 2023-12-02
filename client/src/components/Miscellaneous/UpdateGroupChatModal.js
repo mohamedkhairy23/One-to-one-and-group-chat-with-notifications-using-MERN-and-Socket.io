@@ -18,7 +18,7 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { ChatState } from "../../Context/ChatProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -99,7 +99,9 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
         (selectedUser) => selectedUser._id === userItem._id
       )
     ) {
-      toast.error("User already In Group");
+      toast.warning(
+        `${userItem.name} already exists in group chat (${selectedChat.chatName})`
+      );
       return;
     }
 
