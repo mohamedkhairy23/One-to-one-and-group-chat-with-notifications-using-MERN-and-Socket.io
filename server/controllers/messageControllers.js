@@ -48,7 +48,7 @@ const getAllMessagesForSingleChat = asyncHandler(async (req, res) => {
       .populate("sender", "name pic email")
       .populate("chat");
 
-    res.json(messages);
+    res.status(200).json(messages);
   } catch (error) {
     res.status(400);
     throw new Error(error.message);

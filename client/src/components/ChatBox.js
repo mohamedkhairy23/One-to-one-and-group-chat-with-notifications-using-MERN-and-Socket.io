@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
-import { ChatState } from "../../Context/ChatProvider";
-import SingleChat from "../SingleChat";
+import { ChatState } from "../Context/ChatProvider";
+import SingleChat from "./SingleChat";
 
 const ChatBox = ({ fetchAgain, setFetchAgain }) => {
   const { selectedChat } = ChatState();

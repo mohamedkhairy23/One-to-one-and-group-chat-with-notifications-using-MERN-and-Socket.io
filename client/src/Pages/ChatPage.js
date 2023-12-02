@@ -3,8 +3,8 @@ import axios from "axios";
 import { ChatState } from "../Context/ChatProvider";
 import { Box } from "@chakra-ui/react";
 import SideDrawer from "../components/Miscellaneous/SideDrawer";
-import MyChats from "../components/Miscellaneous/MyChats";
-import ChatBox from "../components/Miscellaneous/ChatBox";
+import MyChats from "../components/MyChats";
+import ChatBox from "../components/ChatBox";
 
 const ChatPage = () => {
   const { user } = ChatState();

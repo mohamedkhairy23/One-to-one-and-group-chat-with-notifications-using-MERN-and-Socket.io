@@ -24,7 +24,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import UserListItem from "../UserAvatar/UserListItem";
 
-const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
+const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { selectedChat, setSelectedChat, user } = ChatState();
 
@@ -153,6 +153,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
       );
       userItem._id === user._id ? setSelectedChat() : setSelectedChat(data);
       setFetchAgain(!fetchAgain);
+      fetchMessages();
       setLoading(false);
       toast.success(
         userItem._id === user._id
