@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Badge,
   Box,
   Button,
   Drawer,
@@ -28,9 +29,17 @@ import ChatLoading from "../ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { getSender } from "../../config/ChatLogics";
 
 const SideDrawer = () => {
-  const { user, setSelectedChat, chats, setChats } = ChatState();
+  const {
+    user,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [search, setSearch] = useState();
@@ -121,9 +130,36 @@ const SideDrawer = () => {
         <div>
           <Menu>
             <MenuButton p={1}>
-              <BellIcon fontSize="2xl" m={1} />
+              <BellIcon fontSize="2xl" mr={0} />{" "}
+              {notification.length > 0 && (
+                <Badge
+                  mb="4"
+                  ml={0}
+                  mr={1}
+                  fontSize="0.8em"
+                  colorScheme="red"
+                  rounded
+                >
+                  {notification.length}
+                </Badge>
+              )}
             </MenuButton>
-            {/*<MenuList></MenuList>*/}
+            <MenuList pl={2}>
+              {!notification.length && "No New Messages"}
+              {notification.map((notify) => (
+                <MenuItem
+                  key={notify._id}
+                  onClick={() => {
+                    setSelectedChat(notify.chat);
+                    setNotification(notification.filter((n) => n !== notify));
+                  }}
+                >
+                  {notify.chat.isGroupChat
+                    ? `New Message in ${notify.chat.chatName}`
+                    : `New Message From ${getSender(user, notify.chat.users)}`}
+                </MenuItem>
+              ))}
+            </MenuList>
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
