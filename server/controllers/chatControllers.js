@@ -187,7 +187,10 @@ const removeFromGroup = asyncHandler(async (req, res) => {
     throw new Error("Chat Not Found");
   }
 
-  if (chatExist.groupAdmin.toString() !== req.user.id) {
+  if (
+    chatExist.groupAdmin.toString() !== req.user.id &&
+    userId !== req.user.id
+  ) {
     res.status(401);
     throw new Error("Only admin of that group can remove a user");
   }
