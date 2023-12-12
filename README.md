@@ -6,6 +6,7 @@ Tools:
 - ChakraUI for styling.
 - NodeJS, and ExpressJS, and Mongo database for server side.
 - JSON Web Token for authentication and authorization.
+- Socket.io for real-time chat messages and notifications.
 
 Features:
 - Authentication (Register - login - logout).
@@ -14,4 +15,5 @@ Features:
 - Any user can rename a group chat.
 - The admin of the group can add a user to a group chat.
 - The admin of the group can Remove a user from a group chat.
-- A logged-in user can leave from a group chat.
+- A logged-in user can leave a group chat.
+- Notifications.
