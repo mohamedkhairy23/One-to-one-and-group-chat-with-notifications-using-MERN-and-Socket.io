@@ -1,6 +1,7 @@
-# One-to-one-and-group-chat-with-notifications-using-MERN-and-Socket.io  https://chattt-7510.onrender.com/
+## One-to-one-and-group-chat-with-notifications-using-MERN-and-Socket.io  https://chattt-7510.onrender.com/
 
-Tools:
+## I used in this project:
+
 - React for the client side.
 - Context for state management.
 - ChakraUI for styling.
@@ -8,7 +9,8 @@ Tools:
 - JSON Web Token for authentication and authorization.
 - Socket.io for real-time chat messages and notifications.
 
-Features:
+## Features:
+
 - Authentication (Register - login - logout).
 - Single chat.
 - Group chat.
